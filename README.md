@@ -5,6 +5,8 @@ You can use it to generate any number of characters with any number of features.
 
 One of the advantages for this tool is that you can generate datasets for Unicode characters. I personally don't have a license for a lot of fonts (and I don't know the alphabets), but if you donate it -- I will place it in this repository with your name on it :smile:
 
+![Letters](letters.png)
+
 ### Prerequisites
 
 - ImageMagick
