@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+
+# MIT License
+#
+# Copyright (c) 2017 Zafar Takhirov
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+help="
+Convert the fonts that are installed on your machine into 'glyph' images,
+and create 'numpy pickles' to use with classification algorithms. The images
+that are generated are placed into separate folders. Also, a pickle file
+is created.
+
+Requires:
+  ImageMagick
+  Python 2.7+
+    numpy
+    scipy
+    pickle
+
+Arguments:
+All arguments are optional
+  -a <string>, --alphabet <string>
+    What alphabet to generate. Every character needs to be unique
+    Defaults to [a-zA-Z0-9] characters
+    Is overridden by --af or --alphabetfile
+  -af <file name>, --alphabetfile <file name>
+    Open the alphabet from <file name>
+    Is overridden by -a or --alphabet
+
+  -d <dir name>, --directory <dir name>
+    Where to save the generated images
+    Defaults to a new directory with the current dimensions as a name
+
+  -e <font name>, --exclude <font name>
+    Exclude a font. Can be stacked
+  -ef <file name>, --excludefile <file name>
+    Exclude all fonts from the file
+
+  -f <font name>, --font <font name>
+    Font names to generate images for (could be location of a font)
+  -ff <file name>, --fontfile <file name>
+    File with font names to load in a list
+  -fd <font dir>, --fontdir <font dir>
+    Directory with the fonts you want to use. The supported extensions
+    are 'ttf,ttc,otf'. You can modify it below in the code
+
+  -h, --help
+    Print this help and exit
+
+  -w <number>, --width <number>
+    Image width (and height). A square image is generated.
+
+
+Folder Naming:
+| WIDTHxWIDTH
+|| Character0
+||| Font0.png
+||| Font1.png
+||| ......
+|| Character1
+||| Font0.png
+||| ......
+|| Characterk
+||| Font0.png
+"
+
+# We need ImageMagick convert
+command -v convert >/dev/null 2>&1 || { echo >&2 "I require ImageMagick convert but couldn't find it. Aborting."; exit 1; }
+
+ALPHABET="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+ALL=true  # By default use all FONTS
+FONTS=()
+EXCLUDE=()  
+WIDTH="28"
+DIR="//" # Placeholder for a DIR name
+FONTDIR="//"
+
+while :
+do
+  case "$1" in
+    -a | --alphabet)
+      ALPHABET="$2"
+      shift 2
+      ;;
+    -af | --alphabetfile)
+      ALPHABET=`cat $2`
+      shift 2
+      ;;
+    -d | --directory)
+      DIR="$2"
+      shift 2
+      ;;
+    -e | --exclude)
+      EXCLUDE=(${EXCLUDE[@]} "$2")
+      shift 2
+      ;;
+    -ef | --excludefile)
+      EXCLUDE=(${EXCLUDE[@]} `cat $2`)
+      shift 2
+      ;;
+    -f | --font)
+      ALL=false
+      FONTS=(${FONTS[@]} "$2")
+      shift 2
+      ;;
+    -ff | --fontfile)
+      ALL=false
+      FONTS=(${FONTS[@]} `cat $2`)
+      shift 2
+      ;;
+    -fd | --fontdir)
+      ALL=false
+      FONTDIR="$2"
+      shift 2
+      ;;
+    -h | --help)
+      echo -e "${help}"
+      shift
+      exit 0
+      ;;
+    -w | --width)
+      WIDTH="$2"
+      shift 2
+      ;;
+    --) # End of all options
+      shift
+      break
+      ;;
+    -*)
+      echo "Error: Unknown option: $1" >&2
+      exit 1
+      ;;
+    *)  # No more options
+      break
+      ;;
+  esac
+  [[ "$1" -eq "-h" ]] || { [[ $# -eq 1 ]] && { echo >&2 "I require even number of parameters! '$1' doesn't have a pair! Aborting."; exit 1; } }
+done
+
+$([[ ${DIR} == '//' ]]) && DIR="${WIDTH}x${WIDTH}"
+
+if [[ ${ALL} == true ]]; then
+  FONTS=$(convert -list font | grep Font: | cut -d ":" -f2)
+fi
+
+while [ -d "$DIR" ]; do
+  read -p "Directory '$DIR' exists. Overwrite? [Y/n] " INPUT
+  case $INPUT in
+    [Yy]* ) break ;;
+    [Nn]* ) echo "Aborting."; exit 1; ;;
+    "" ) break ;;
+    * ) echo "Invalid selection: " $INPUT;;
+  esac
+done
+
+re_upper='[A-Z]'
+re_lower='[a-z]'
+re_numeric='[0-9]'
+mkdir -p "${DIR}/pickles"
+# OLDIFS="$IFS"  # in case there are spaces in the name
+# IFS="" # don't split on any white space
+shopt -s nullglob;
+for (( i=0; i<${#ALPHABET}; i++ )); do
+  letter=${ALPHABET:$i:1}
+  if [[ ${letter} =~ ${re_upper} ]]; then
+    letter_name=upper_${letter}
+  elif [[ ${letter} =~ ${re_lower} ]]; then
+    letter_name=lower_${letter}
+  elif [[ ${letter} =~ ${re_numeric} ]]; then
+    letter_name=numeric_${letter}
+  else
+    letter_name=special_${letter}
+  fi
+
+  letter_path="${DIR}/${letter_name}"
+
+  mkdir -p "${letter_path}"
+  if [[ "${FONTDIR}" == '//' ]]; then
+    for font in ${FONTS[@]}; do
+      fontname=$(basename "${font%.*}")
+      if [[ "${EXCLUDE[@]}" =~ "${fontname}" ]]; then
+        continue
+      fi
+      filename="${letter_path}/${fontname}.png"
+      magick -pointsize ${WIDTH} -font "${font}" label:"$letter" -channel Black -gravity center -trim -bordercolor White -resize "${WIDTH}x${WIDTH}>" -resize "${WIDTH}x${WIDTH}<" -extent ${WIDTH}x${WIDTH} ${filename}
+    done
+  else
+    # for font in $(ls -d -1 ${FONTDIR}/*.{ttf,ttc,otf})
+    ls -d -1 "${FONTDIR}"/*.{ttf,ttc,otf} | while read font
+    do 
+      fontname=$(basename "${font%.*}")
+      # echo "${fontname}"
+      # echo "${EXCLUDE[@]}"
+      if [[ "${EXCLUDE[@]}" =~ "${fontname}" ]]; then
+        # echo "Skipping ${fontname}"
+        continue
+      fi
+      filename=${letter_path}/"${fontname}".png
+      # echo "Font: $font"
+      # echo "Letter: $letter"
+      # echo "Filename: $filename"
+      magick -pointsize ${WIDTH} -font "${font}" label:"$letter" -channel Black -gravity center -trim -bordercolor White -resize "${WIDTH}x${WIDTH}>" -resize "${WIDTH}x${WIDTH}<" -extent "${WIDTH}x${WIDTH}" "${filename}"
+    done
+    
+  fi
+
+  ./imgfolder2pickle.py "${letter_path}" "${letter}"
+  mv -f "${letter_path}/${letter_name}.pickle" "${DIR}/pickles/${letter_name}.pickle"
+done
+./combine_pickles.py "${DIR}/pickles" "${DIR}/${WIDTH}x${WIDTH}.pickle"
+# IFS=$OLDIFS # restore IFS

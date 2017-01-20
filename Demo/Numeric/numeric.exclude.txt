@@ -1,0 +1,67 @@
+Al Nile
+Al Tarikh
+AlBayan
+Baghdad
+Beirut
+Bodoni Ornaments
+Corsiva
+Damascus
+DecoTypeNaskh
+DevanagariMT
+Diwan Kufi
+Diwan Thuluth
+Farah
+Farisi
+GujaratiMT
+Gurmukhi
+Hoefler
+Hoefler Text Ornaments
+HoeflerTextOrnaments
+ITFDevanagari
+Kailasa
+KufiStandardGK 
+Kokonor
+Mishafi
+Mishafi Gold
+Mshtakan
+Muna
+Nadeem
+NewPeninimMT
+Raanana
+Sana
+STIXGeneral
+STIXGeneralBol
+STIXGeneralBolIta
+STIXGeneralItalic
+STIXIntDBol
+STIXIntDReg
+STIXIntSmBol
+STIXIntSmReg
+STIXIntUpBol
+STIXIntUpDBol
+STIXIntUpDReg
+STIXIntUpReg
+STIXIntUpSmBol
+STIXIntUpSmReg
+STIXNonUni
+STIXNonUniBol
+STIXNonUniBolIta
+STIXNonUniIta
+STIXSizFiveSymReg
+STIXSizFourSymBol
+STIXSizFourSymReg
+STIXSizOneSymBol
+STIXSizOneSymReg
+STIXSizThreeSymBol
+STIXSizThreeSymReg
+STIXSizTwoSymBol
+STIXSizTwoSymReg
+STIXVar
+STIXVarBol
+Waseem
+Webdings
+Wingdings
+Wingdings 2
+Wingdings 3
+Wingdings2
+Wingdings3
