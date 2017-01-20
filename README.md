@@ -86,7 +86,7 @@ Here is the list of arguments (in alphabetical order):
 The simplest way to use it
 
 ```bash
-$> convert_fonts
+$> not_notMNIST
 ```
 
 That will use all the fonts that are installed on your machine, the image size would be 28x28, and the output filder would be `./28x28/`. The default alphabet is alphanumeric `[a-zA-Z0-9]`.
@@ -100,8 +100,8 @@ This is a small dataset, as I don't have a lot of fonts. I just wanted to show h
 The data was generated using:
 
 ```
-$> ./convert_fonts -w 28 -d Demo/Japanese/28x28 -af Demo/Japanese/japanese.alphabet -ff Demo/Japanese/japanese.fonts
-$> ./convert_fonts -w 100 -d Demo/Japanese/100x100 -af Demo/Japanese/japanese.alphabet -ff Demo/Japanese/japanese.fonts
+$> ./not_notMNIST -w 28 -d Demo/Japanese/28x28 -af Demo/Japanese/japanese.alphabet -ff Demo/Japanese/japanese.fonts
+$> ./not_notMNIST -w 100 -d Demo/Japanese/100x100 -af Demo/Japanese/japanese.alphabet -ff Demo/Japanese/japanese.fonts
 ```
 
 - `-w` was used to specify the size of the images to generate.
@@ -114,7 +114,7 @@ $> ./convert_fonts -w 100 -d Demo/Japanese/100x100 -af Demo/Japanese/japanese.al
 This one is more of a 'MNIST'-style with only numeric values generated on all of the fonts that you have. Granted it is not handwritten, but I guess you can still use it :)
 
 ```
-$> ./convert_fonts -w 28 -d Demo/Numeric/28x28 -af Demo/Numeric/numeric.alphabet -ef Demo/Numeric/numeric.exclude.txt
+$> ./not_notMNIST -w 28 -d Demo/Numeric/28x28 -af Demo/Numeric/numeric.alphabet -ef Demo/Numeric/numeric.exclude.txt
 ```
 
 In here we also used `-ef` to specify the font exclusion list. This list specifies which fonts are not supposed to be used.
