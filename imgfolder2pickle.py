@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from scipy import misc
 import glob
@@ -16,7 +17,7 @@ Expected command line arguments:
 """
 
 folder_path = sys.argv[1]
-label_to_use = sys.argv[2]
+label_to_use = sys.argv[2].decode('utf-8')
 pickle_name = folder_path + '/' + os.path.realpath(folder_path).split('/')[-1] + '.pickle'
 
 data = {'labels': [], 'images': []}
