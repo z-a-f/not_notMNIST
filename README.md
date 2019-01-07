@@ -48,7 +48,15 @@ plt.show()
 
 ## How to generate the data
 
-Here is the list of arguments (in alphabetical order):
+The simplest way to use it
+
+```bash
+$> not_notMNIST
+```
+
+That will use all the fonts that are installed on your machine, the image size would be 28x28, and the output filder would be `./28x28/`. The default alphabet is alphanumeric `[a-zA-Z0-9]`.
+
+You can also use arguments (in alphabetical order):
 
 ```
 -a <string>, --alphabet <string>
@@ -83,14 +91,6 @@ Here is the list of arguments (in alphabetical order):
   Image width (and height). A square image is generated.
 ```
 
-The simplest way to use it
-
-```bash
-$> not_notMNIST
-```
-
-That will use all the fonts that are installed on your machine, the image size would be 28x28, and the output filder would be `./28x28/`. The default alphabet is alphanumeric `[a-zA-Z0-9]`.
-
 ## Demo
 
 ### Japanese
@@ -123,3 +123,4 @@ In here we also used `-ef` to specify the font exclusion list. This list specifi
 
 - Fix the Unicode loading
 - Add option for a noisy background
+- Add option for character transformation (translation and rotation)
