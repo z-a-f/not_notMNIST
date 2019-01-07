@@ -122,3 +122,4 @@ In here we also used `-ef` to specify the font exclusion list. This list specifi
 # TODO
 
 - Fix the Unicode loading
+- Add option for a noisy background
